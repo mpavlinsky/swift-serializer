@@ -12,7 +12,34 @@
 
 import Foundation
 
+extension NSDictionary {
+    func __conversion() -> Serializable {
+        return Serializable(jsonDict: self)
+    }
+}
+
 public class Serializable : NSObject{
+    convenience init(jsonString: NSString?) {
+        if let jsonString = jsonString {
+            let jsonDict : NSDictionary = NSJSONSerialization.JSONObjectWithData(jsonString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!, options: nil, error: nil) as! NSDictionary
+
+            self.init(jsonDict: jsonDict)
+        } else {
+            self.init(jsonDict: nil)
+        }
+    }
+
+    convenience init(jsonDict: NSDictionary?) {
+        self.init()
+
+        if let jsonDict = jsonDict {
+            for (key, value) in jsonDict {
+                self.setValue(value, forKey:key as! String)
+            }
+        }
+
+    }
+
     // http://stackoverflow.com/questions/27989094/how-to-unwrap-an-optional-value-from-any-type
     func unwrap(any:Any) -> Any? {
         let mi = reflect(any)
